@@ -343,8 +343,13 @@
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
         // ⚠️ CONFIGURACIÓN DE SUPABASE - REEMPLAZA CON TUS DATOS
-        const SUPABASE_URL = 'https://qfhzgourwhhsjedyntdx.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmaHpnb3Vyd2hoc2plZHludGR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5NTcyNTksImV4cCI6MjA3NzUzMzI1OX0.vuHiDH7nPgmslnpzKm_RNHFsLQUbMHUOy9RY9ouX0JU';
+        const SUPABASE_URL = https://qfhzgourwhhsjedyntdx.supabase.co;
+        const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmaHpnb3Vyd2hoc2plZHludGR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5NTcyNTksImV4cCI6MjA3NzUzMzI1OX0.vuHiDH7nPgmslnpzKm_RNHFsLQUbMHUOy9RY9ouX0JU;
+
+        // Validar configuración
+        if (SUPABASE_URL === 'https://TU_PROJECT_ID.supabase.co' || SUPABASE_ANON_KEY === 'TU_ANON_KEY') {
+            alert('⚠️ ERROR: Debes configurar SUPABASE_URL y SUPABASE_ANON_KEY con tus credenciales reales de Supabase.\n\nVe a Settings → API en tu proyecto de Supabase.');
+        }
 
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -434,7 +439,10 @@
                 progressFill.style.width = '100%';
                 progressFill.textContent = '100%';
 
-                if (uploadError) throw uploadError;
+                if (uploadError) {
+                    console.error('Error detallado:', uploadError);
+                    throw new Error(`Error de Storage: ${uploadError.message}. Verifica que el bucket 'videos' exista y sea público.`);
+                }
 
                 // Obtener URL pública
                 const { data: urlData } = supabase.storage
