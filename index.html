@@ -163,7 +163,7 @@
             gap: 10px;
         }
 
-        .btn-play, .btn-delete, .btn-download {
+        .btn-play, .btn-delete {
             flex: 1;
             padding: 8px;
             border: none;
@@ -183,12 +183,7 @@
             color: white;
         }
 
-        .btn-download {
-            background: #2196F3;
-            color: white;
-        }
-
-        .btn-play:hover, .btn-delete:hover, .btn-download:hover {
+        .btn-play:hover, .btn-delete:hover {
             opacity: 0.8;
         }
 
@@ -301,7 +296,7 @@
     <div class="container">
         <header>
             <h1>🎬 Mi Galería de Videos</h1>
-            <p>Almacenamiento en la nube con Supabase (Gratis)</p>
+            <p>Almacenamiento en la nube con Supabase</p>
         </header>
 
         <div id="alertContainer"></div>
@@ -338,22 +333,14 @@
         </div>
     </div>
 
-    <!-- Supabase SDK -->
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-        // ⚠️ CONFIGURACIÓN DE SUPABASE - REEMPLAZA CON TUS DATOS
-const SUPABASE_URL = 'https://qfhzgourwhhsjedyntdx.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmaHpnb3Vyd2hoc2plZHludGR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5NTcyNTksImV4cCI6MjA3NzUzMzI1OX0.vuHiDH7nPgmslnpzKm_RNHFsLQUbMHUOy9RY9ouX0JU';
-        
-        // Validar configuración
-        if (SUPABASE_URL === 'https://TU_PROJECT_ID.supabase.co' || SUPABASE_ANON_KEY === 'TU_ANON_KEY') {
-            alert('⚠️ ERROR: Debes configurar SUPABASE_URL y SUPABASE_ANON_KEY con tus credenciales reales de Supabase.\n\nVe a Settings → API en tu proyecto de Supabase.');
-        }
+        const SUPABASE_URL = 'https://qfhzgourwhhsjedyntdx.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmaHpnb3Vyd2hoc2plZHludGR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5NTcyNTksImV4cCI6MjA3NzUzMzI1OX0.vuHiDH7nPgmslnpzKm_RNHFsLQUbMHUOy9RY9ouX0JU';
 
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Elementos del DOM
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
         const videoContainer = document.getElementById('videoContainer');
@@ -364,10 +351,8 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
         const uploadBtn = document.getElementById('uploadBtn');
         const alertContainer = document.getElementById('alertContainer');
 
-        // Cargar videos al iniciar
         loadVideos();
 
-        // Drag and drop
         uploadArea.addEventListener('click', () => fileInput.click());
 
         uploadArea.addEventListener('dragover', (e) => {
@@ -403,7 +388,6 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
         }
 
         async function uploadVideo(file) {
-            // Validar tamaño (50MB máximo)
             if (file.size > 50 * 1024 * 1024) {
                 showAlert('El video es muy grande. Máximo 50MB', 'error');
                 return;
@@ -413,7 +397,6 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
             progressBar.style.display = 'block';
             
             try {
-                // Simular progreso (Supabase no tiene callback de progreso directo)
                 let progress = 0;
                 const progressInterval = setInterval(() => {
                     progress += 10;
@@ -423,11 +406,9 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
                     }
                 }, 200);
 
-                // Crear nombre único para el archivo
                 const timestamp = Date.now();
                 const fileName = `${timestamp}_${file.name}`;
 
-                // Subir a Storage
                 const { data: uploadData, error: uploadError } = await supabase.storage
                     .from('videos')
                     .upload(fileName, file, {
@@ -441,15 +422,13 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
                 if (uploadError) {
                     console.error('Error detallado:', uploadError);
-                    throw new Error(`Error de Storage: ${uploadError.message}. Verifica que el bucket 'videos' exista y sea público.`);
+                    throw new Error(`Error: ${uploadError.message}`);
                 }
 
-                // Obtener URL pública
                 const { data: urlData } = supabase.storage
                     .from('videos')
                     .getPublicUrl(fileName);
 
-                // Guardar metadata en la base de datos
                 const { error: dbError } = await supabase
                     .from('videos')
                     .insert([
@@ -540,7 +519,6 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
                 `;
                 grid.appendChild(card);
 
-                // Cargar miniatura del video
                 const videoEl = card.querySelector('.video-preview');
                 videoEl.addEventListener('loadedmetadata', () => {
                     videoEl.currentTime = 1;
@@ -568,14 +546,12 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
             }
 
             try {
-                // Eliminar de Storage
                 const { error: storageError } = await supabase.storage
                     .from('videos')
                     .remove([storagePath]);
 
                 if (storageError) throw storageError;
 
-                // Eliminar de la base de datos
                 const { error: dbError } = await supabase
                     .from('videos')
                     .delete()
